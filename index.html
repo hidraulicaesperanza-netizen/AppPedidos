@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="theme-color" content="#4781c0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sellos">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buscador de sellos · Oleohidráulica Esperanza</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f5f7;--card:#fff;--tx:#1f2a36;--mut:#5d6469;--ac:#4781c0;--acx:#fff;--bd:#d9dde1;--ok:#06d002;--gr:#aeb2b5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12181f;--card:#1b232c;--tx:#eef1f4;--mut:#aeb2b5;--ac:#6fa3dc;--acx:#10161c;--bd:#2c3742}}
+:root[data-theme="dark"]{--bg:#12181f;--card:#1b232c;--tx:#eef1f4;--mut:#aeb2b5;--ac:#6fa3dc;--acx:#10161c;--bd:#2c3742}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
+.logo{display:block;background:#fff;border-radius:12px;padding:8px 12px;margin:0 auto 16px;max-width:300px;width:100%;box-sizing:border-box;border-bottom:4px solid var(--ok)}
+.logo img{display:block;width:100%;height:auto}
+h1{font-size:21px;margin:0 0 4px}h2{font-size:17px;margin:22px 0 8px}.sub,.msg{color:var(--mut);font-size:14px;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.tabs button{font:inherit;font-size:13px;padding:9px 4px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;cursor:pointer}
+.tabs button.on{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+label{display:block;font-size:13px;color:var(--mut);margin:0 0 4px}
+input{width:100%;box-sizing:border-box;font:inherit;padding:11px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+input:focus,button:focus-visible{outline:2px solid var(--ac)}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;margin:0 6px 6px 0;background:var(--gr);color:#1f2a36}
+.tag.ok{background:var(--ok);color:#06210a}.tag.m{background:var(--ac);color:var(--acx)}
+.code{font-size:21px;font-weight:700;color:var(--ac);word-break:break-all}
+.dims{font-size:14px;margin:6px 0 10px}
+.btn{font:inherit;padding:10px 14px;border-radius:8px;border:1px solid var(--ac);background:var(--ac);color:var(--acx);cursor:pointer;font-weight:600}
+.btn.s{background:none;color:var(--ac)}.btn:disabled{opacity:.5;cursor:default}
+.it{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
+.it:last-child{border:0}.it b{color:var(--ac);word-break:break-all}.it small{display:block;color:var(--mut)}
+.q{display:flex;align-items:center;gap:6px}.q button{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;cursor:pointer}
+.q span{min-width:24px;text-align:center;font-weight:600}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+textarea{width:100%;box-sizing:border-box;min-height:120px;margin-top:10px;font:13px/1.4 ui-monospace,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px}
+.note{font-size:12px;color:var(--mut);margin-top:6px}
+</style></head><body><main>
+<div class="logo"><img id="lg" src="logo.png" alt="Oleohidráulica Esperanza · VSM Ingeniería"></div>
+<h1>Buscador de sellos</h1>
+<p class="sub">Cargá las medidas, buscá el código del sistema y armá la lista de pedido.</p>
+<div class="tabs" id="tabs"></div>
+<div class="card"><div class="row">
+<div><label for="a">D. interior (mm)</label><input id="a" inputmode="decimal" placeholder="ej. 234,62"></div>
+<div><label for="b" id="lb">Sección (mm)</label><input id="b" inputmode="decimal" placeholder="ej. 2,62"></div>
+<div id="hw"><label for="c">Altura (mm, opcional)</label><input id="c" inputmode="decimal" placeholder="ej. 9,52"></div>
+</div></div>
+<div id="out"></div>
+<h2>Lista de pedido <span id="cnt" class="msg"></span></h2>
+<div class="card"><div id="list"></div>
+<div class="acts"><button class="btn" id="cp">Copiar lista</button><button class="btn" id="pdf">Generar PDF</button><button class="btn s" id="clr">Vaciar</button></div>
+<div id="info" class="note"></div><textarea id="ta" hidden readonly></textarea></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="data.js"></script>
+<script>
+const D=DATA.map(r=>({t:r[0],c:r[1],n:r[2],i:r[3],o:r[4],s:r[5],h:r[6],k:r[7],m:r[8]}));
+const T=[['oring','O-ring'],['respaldo','Respaldo'],['poli','Polipack'],['wiper','Limpiavástago']];
+const $=id=>document.getElementById(id),f=n=>n==null?'–':n.toFixed(2).replace('.',','),pn=s=>parseFloat(String(s).replace(',','.'));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tp='oring',L=[];
+try{L=JSON.parse(localStorage.getItem('lista')||'[]')}catch(e){}
+const save=()=>{try{localStorage.setItem('lista',JSON.stringify(L))}catch(e){}};
+const isP=()=>tp=='poli'||tp=='wiper';
+function tabs(){$('tabs').innerHTML=T.map(([k,v])=>`<button data-k="${k}" class="${k==tp?'on':''}">${v}</button>`).join('');
+ $('lb').textContent=isP()?'D. exterior (mm)':'Sección (mm)';$('b').placeholder=isP()?'ej. 152,40':'ej. 2,62';$('hw').hidden=!isP()}
+function dim(x){return `D.int ${f(x.i)} · D.ext ${f(x.o)}`+(x.s!=null&&!x.h?` · sección ${f(x.s)}`:'')+(x.h?` · altura ${f(x.h)}`:'')}
+function find(){
+ const a=pn($('a').value),b=pn($('b').value),c=pn($('c').value),o=$('out');
+ if(!(a>0)){o.innerHTML='<p class="msg">Ingresá el diámetro interior para buscar.</p>';return}
+ const R=[];D.forEach((x,ix)=>{if(x.t!=tp)return;let d=Math.abs(x.i-a),ok=d<=0.06;
+  if(b>0){const e=isP()?Math.abs(x.o-b):Math.abs(x.s-b);d+=e;ok=ok&&e<=(isP()?0.1:0.06)}
+  if(isP()&&c>0){const e=x.h==null?9:Math.abs(x.h-c);d+=e;ok=ok&&e<=0.1}
+  R.push({x,ix,d,ok})});
+ R.sort((p,q)=>p.d-q.d);const ex=R.filter(r=>r.ok),sh=(ex.length?ex:R.slice(0,6));
+ let h=ex.length?`<p class="msg">${ex.length} coincidencia${ex.length>1?'s':''} exacta${ex.length>1?'s':''}:</p>`:'<p class="msg">No hay coincidencia exacta. Más cercanos:</p>';
+ h+=sh.map(r=>{const x=r.x;return `<div class="card"><span class="tag ${r.ok?'ok':''}">${r.ok?'Exacta':'Dif. '+f(r.d)+' mm'}</span>${x.m?`<span class="tag m">${esc(x.m)}</span>`:''}${x.k?`<span class="tag">AS568 2-${String(x.k).padStart(3,'0')}</span>`:''}
+ <div class="code">${esc(x.c)}</div><div class="msg" style="margin:0">${esc(x.n)}</div><div class="dims">${dim(x)}</div>
+ <button class="btn add" data-ix="${r.ix}">+ Agregar a la lista</button></div>`}).join('');
+ o.innerHTML=h}
+function line(x){return `${x.q} x ${x.c} - ${x.n} (${dim(x)})`}
+function rl(){
+ $('cnt').textContent=L.length?`(${L.length} ítem${L.length>1?'s':''}, ${L.reduce((s,x)=>s+x.q,0)} u.)`:'';
+ $('list').innerHTML=L.length?L.map((x,j)=>`<div class="it"><div><b>${esc(x.c)}</b><small>${esc(x.n)}</small><small>${dim(x)}</small></div>
+ <div class="q"><button data-j="${j}" data-d="-1" aria-label="Menos">−</button><span>${x.q}</span><button data-j="${j}" data-d="1" aria-label="Más">+</button><button data-j="${j}" data-d="x" aria-label="Quitar">×</button></div></div>`).join(''):'<p class="msg" style="margin:0">La lista está vacía. Agregá ítems desde los resultados.</p>';
+ ['cp','pdf','clr'].forEach(i=>$(i).disabled=!L.length)}
+const info=t=>{$('info').textContent=t};
+$('out').onclick=e=>{const b=e.target.closest('.add');if(!b)return;const x=D[+b.dataset.ix],g=L.find(y=>y.c==x.c);
+ if(g)g.q++;else L.push({...x,q:1});save();rl();info(x.c+' agregado.')};
+$('list').onclick=e=>{const b=e.target.closest('button');if(!b)return;const j=+b.dataset.j,d=b.dataset.d;
+ if(d=='x')L.splice(j,1);else{L[j].q+=+d;if(L[j].q<1)L.splice(j,1)}save();rl()};
+$('clr').onclick=()=>{L=[];save();rl();$('ta').hidden=true;info('')};
+$('cp').onclick=async()=>{const t=L.map(line).join('\n'),ta=$('ta');ta.value=t;
+ try{await navigator.clipboard.writeText(t);info('Lista copiada al portapapeles.');ta.hidden=true}
+ catch(e){ta.hidden=false;ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}info(ok?'Lista copiada.':'Seleccioná el texto y copialo manualmente.')}};
+$('pdf').onclick=async()=>{
+ if(!window.jspdf){info('No se pudo cargar el generador de PDF. Usá "Copiar lista".');return}
+ const doc=new jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=14;let y=14;
+ try{const im=$('lg'),cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;cv.getContext('2d').drawImage(im,0,0);doc.addImage(cv.toDataURL('image/png'),'PNG',M,y,44,44*im.naturalHeight/im.naturalWidth)}catch(e){}
+ doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(71,129,192);doc.text('Lista de pedido',W-M,y+7,{align:'right'});
+ doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(90);doc.text(new Date().toLocaleDateString('es-AR'),W-M,y+13,{align:'right'});
+ y+=30;const head=()=>{doc.setFillColor(71,129,192);doc.rect(M,y,W-2*M,7,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(9);
+  doc.text('Cant.',M+2,y+5);doc.text('Código',M+16,y+5);doc.text('Descripción / medidas (mm)',M+62,y+5);y+=7};head();
+ doc.setFont('helvetica','normal');doc.setTextColor(30);
+ L.forEach((x,j)=>{const d=doc.splitTextToSize(x.n,W-M-(M+62)),m=dim(x).replace(/\./g,','),c=doc.splitTextToSize(x.c,44),hh=Math.max(d.length+1,c.length)*4.2+3;
+  if(y+hh>285){doc.addPage();y=14;head();doc.setFont('helvetica','normal');doc.setTextColor(30)}
+  if(j%2){doc.setFillColor(238,241,244);doc.rect(M,y,W-2*M,hh,'F')}
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.text(String(x.q),M+2,y+5);doc.text(c,M+16,y+5);
+  doc.setFont('helvetica','normal');doc.text(d,M+62,y+5);doc.setTextColor(95);doc.text(m,M+62,y+5+d.length*4.2);doc.setTextColor(30);y+=hh});
+ const blob=doc.output('blob'),file=new File([blob],'lista_pedido.pdf',{type:'application/pdf'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Lista de pedido'});info('PDF compartido.')}
+  else{doc.save('lista_pedido.pdf');info('PDF generado.')}}
+ catch(e){if(e&&e.name=='AbortError')info('Cancelado.');else{try{doc.save('lista_pedido.pdf');info('PDF generado.')}catch(_){info('No se pudo generar el PDF.')}}}};
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(b){tp=b.dataset.k;tabs();find()}};
+['a','b','c'].forEach(i=>$(i).oninput=find);
+tabs();find();rl();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>
